@@ -1,4 +1,4 @@
-import { makeData, wbsdata, wbsmapdata } from "./makeData.js";
+import { mapelement, mapwbs, wbsdata } from "./makeData.js";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   useReactTable,
@@ -11,7 +11,13 @@ import {
 import { ActionIcon, Box, Flex, Select, Table, Text } from "@mantine/core";
 import { IconArrowRight, IconArrowDown } from "@tabler/icons-react";
 
-const CustomCell = ({ getValue, row: { index }, column: { id }, table }) => {
+const CustomCell = ({
+  getValue,
+  row: { index },
+  column: { id },
+  table,
+  type = "element",
+}) => {
   const initialValue = getValue();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -33,7 +39,7 @@ const CustomCell = ({ getValue, row: { index }, column: { id }, table }) => {
   return isEditing ? (
     <Select
       placeholder="Pick WBS Item"
-      data={wbsmapdata}
+      data={type === "element" ? mapelement : mapwbs}
       searchable
       onBlur={handleBlur}
       value={value}
@@ -49,7 +55,7 @@ const CustomCell = ({ getValue, row: { index }, column: { id }, table }) => {
         value
       ) : (
         <Text fz="sm" style={{ color: "#808080" }}>
-          Choose WBS Item
+          Choose {type === "element" ? "Element" : "WBS"}
         </Text>
       )}
     </Box>
@@ -57,110 +63,56 @@ const CustomCell = ({ getValue, row: { index }, column: { id }, table }) => {
 };
 
 export const TableMapping = () => {
+  const [columnFilters, setColumnFilters] = useState([]);
+
   const columns = useMemo(
     () => [
       {
+        accessorKey: "element",
+        header: () => <span>Work Element</span>,
+        footer: (props) => props.column.id,
+        meta: {
+          filterVariant: "select",
+        },
+      },
+      {
         accessorKey: "level",
-        header: ({ table }) => (
-          <>
-            <Flex
-              justify="flex-start"
-              align="center"
-              gap="xs"
-              {...{
-                onClick: table.getToggleAllRowsExpandedHandler(),
-              }}
-            >
-              {table.getIsAllRowsExpanded() ? (
-                <ActionIcon size={18}>
-                  <IconArrowDown stroke={2} />
-                </ActionIcon>
-              ) : (
-                <ActionIcon size={18} variant="default">
-                  <IconArrowRight stroke={2} />
-                </ActionIcon>
-              )}
-              Level
-            </Flex>
-          </>
-        ),
-        cell: ({ row, getValue }) => (
-          <div
-            style={{
-              // Since rows are flattened by default,
-              // we can use the row.depth property
-              // and paddingLeft to visually indicate the depth
-              // of the row
-              paddingLeft: `${row.depth * 2}rem`,
-            }}
-          >
-            <Flex justify="flex-start" align="center" gap="xs">
-              {row.getCanExpand() ? (
-                <Flex
-                  justify="flex-start"
-                  align="center"
-                  gap="md"
-                  {...{
-                    onClick: row.getToggleExpandedHandler(),
-                    style: { cursor: "pointer" },
-                  }}
-                >
-                  {row.getIsExpanded() ? (
-                    <ActionIcon size={18}>
-                      <IconArrowDown stroke={2} />
-                    </ActionIcon>
-                  ) : (
-                    <ActionIcon size={18} variant="default">
-                      <IconArrowRight stroke={2} />
-                    </ActionIcon>
-                  )}
-                </Flex>
-              ) : (
-                ""
-              )}
-              <span>{getValue()}</span>
-            </Flex>
-          </div>
-        ),
+        header: () => "Level",
         footer: (props) => props.column.id,
       },
       {
-        // accessorFn: (row) => row.code,
-        accessorKey: "code",
-        // cell: (info) => info.getValue(),
-        header: () => <span>WBS Code</span>,
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "description",
-        header: () => "Description",
+        accessorKey: "wbs",
+        header: "WBS Code",
         footer: (props) => props.column.id,
       },
       {
         accessorKey: "cbs",
-        header: () => <span>CBS Code</span>,
+        header: "CBS Code",
         footer: (props) => props.column.id,
       },
       {
-        accessorKey: "parent",
-        header: "Parent code",
+        accessorKey: "desc",
+        header: "Description",
         footer: (props) => props.column.id,
       },
       {
-        accessorKey: "unit",
-        header: "Unit of measure",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "cbs3",
-        header: "CBS level 3 code",
-        footer: (props) => props.column.id,
-      },
-      {
-        header: "WBS Supplier Mapping",
+        header: "Mapping Element",
         accessor: "test",
         cell: ({ getValue, row, column, table }) => (
           <CustomCell
+            getValue={getValue}
+            row={row}
+            column={column}
+            table={table}
+          />
+        ),
+      },
+      {
+        header: "Mapping WBS",
+        accessor: "test",
+        cell: ({ getValue, row, column, table }) => (
+          <CustomCell
+            type="wbs"
             getValue={getValue}
             row={row}
             column={column}
@@ -181,8 +133,9 @@ export const TableMapping = () => {
     columns,
     state: {
       expanded,
+      columnFilters,
     },
-
+    onColumnFiltersChange: setColumnFilters,
     onExpandedChange: setExpanded,
     getSubRows: (row) => row.subRows,
     getCoreRowModel: getCoreRowModel(),
@@ -197,7 +150,13 @@ export const TableMapping = () => {
   }, []);
 
   return (
-    <Table verticalSpacing="md">
+    <Table
+      verticalSpacing="md"
+      striped
+      highlightOnHover
+      withTableBorder
+      withColumnBorders
+    >
       <Table.Thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <Table.Tr key={headerGroup.id}>
@@ -210,6 +169,12 @@ export const TableMapping = () => {
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
+
+                      {header.column.getCanFilter() ? (
+                        <div>
+                          <Filter column={header.column} />
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </Table.Th>
@@ -236,3 +201,68 @@ export const TableMapping = () => {
     </Table>
   );
 };
+
+function Filter({ column }) {
+  const columnFilterValue = column.getFilterValue();
+  const { filterVariant } = column.columnDef.meta ?? {};
+
+  return filterVariant === "range" ? (
+    <div>
+      <div className="flex space-x-2">
+        {/* See faceted column filters example for min max values functionality */}
+        {/*<DebouncedInput*/}
+        {/*  type="number"*/}
+        {/*  value={(columnFilterValue as [number, number])?.[0] ?? ''}*/}
+        {/*  onChange={value =>*/}
+        {/*    column.setFilterValue((old: [number, number]) => [value, old?.[1]])*/}
+        {/*  }*/}
+        {/*  placeholder={`Min`}*/}
+        {/*  className="w-24 border shadow rounded"*/}
+        {/*/>*/}
+        {/*<DebouncedInput*/}
+        {/*  type="number"*/}
+        {/*  value={(columnFilterValue as [number, number])?.[1] ?? ''}*/}
+        {/*  onChange={value =>*/}
+        {/*    column.setFilterValue((old: [number, number]) => [old?.[0], value])*/}
+        {/*  }*/}
+        {/*  placeholder={`Max`}*/}
+        {/*  className="w-24 border shadow rounded"*/}
+        {/*/>*/}
+      </div>
+      <div className="h-1" />
+    </div>
+  ) : filterVariant === "select" ? (
+    // <select
+    //   onChange={(e) => column.setFilterValue(e.target.value)}
+    //   value={columnFilterValue?.toString()}
+    // >
+    //   {/* See faceted column filters example for dynamic select options */}
+    //   <option value="">All</option>
+    //   <option value="complicated">complicated</option>
+    //   <option value="relationship">relationship</option>
+    //   <option value="single">single</option>
+    // </select>
+    <Select
+      onChange={column.setFilterValue}
+      value={columnFilterValue?.toString()}
+      data={[
+        "A - Preliminaries",
+        "BC - Boxed Culverts / Underpasses",
+        "C - Central Reserve",
+        "EO - Extended Overbridges",
+      ]}
+      style={{ width: "200px" }}
+      comboboxProps={{ width: 300, position: "bottom-start" }}
+    />
+  ) : (
+    <div></div>
+    // <DebouncedInput
+    //   className="w-36 border shadow rounded"
+    //   onChange={value => column.setFilterValue(value)}
+    //   placeholder={`Search...`}
+    //   type="text"
+    //   value={(columnFilterValue ?? '') as string}
+    // />
+    // See faceted column filters example for datalist search suggestions
+  );
+}

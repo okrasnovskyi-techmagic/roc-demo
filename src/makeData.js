@@ -1,219 +1,156 @@
-import { faker } from "@faker-js/faker";
-
-const range = (len) => {
-  const arr = [];
-  for (let i = 0; i < len; i++) {
-    arr.push(i);
-  }
-  return arr;
-};
-
-const newWBS = () => {
-  return {
-    level: faker.number.int({ min: 1, max: 5 }),
-    code: faker.number.int({ min: 1000, max: 10000 }),
-    description: faker.word.adjective(),
-    cbs: faker.number.int({ min: 1000, max: 10000 }),
-    parent: faker.number.int({ min: 1, max: 5 }),
-    unit: faker.science.chemicalElement().name,
-    cbs3: faker.number.int({ min: 10000, max: 100000 }),
-  };
-};
-
-export const makeData = (...lens) => {
-  const makeDataLevel = (depth = 0) => {
-    const len = lens[depth];
-
-    return range(len).map((d) => {
-      return {
-        ...newWBS(),
-        subRows: lens[depth + 1] ? makeDataLevel(depth + 1) : undefined,
-      };
-    });
-  };
-
-  return makeDataLevel();
-};
-
 export const wbsdata = [
   {
-    level: 1,
-    code: "1",
-    description: "Scheme Design",
-    cbs: "1",
-    parent: undefined,
-    unit: "Sum",
-    cbs3: undefined,
-    subRows: [
-      {
-        level: 2,
-        code: "1.1",
-        description: "Scheme Design",
-        cbs: "110000",
-        parent: undefined,
-        unit: "Sum",
-        cbs3: undefined,
-        subRows: [
-          {
-            level: 3,
-            code: "1.1.1",
-            description: "Develop Geometry",
-            cbs: "110100",
-            parent: undefined,
-            unit: "Sum",
-            cbs3: undefined,
-          },
-          {
-            level: 3,
-            code: "1.1.2",
-            description: "Highways Design",
-            cbs: "110200",
-            parent: undefined,
-            unit: "Sum",
-            cbs3: undefined,
-          },
-          {
-            level: 3,
-            code: "1.1.3",
-            description: "Structures Design",
-            cbs: "110300",
-            parent: undefined,
-            unit: "Sum",
-            cbs3: undefined,
-          },
-          {
-            level: 3,
-            code: "1.1.4",
-            description: "Technology Design",
-            cbs: "110400",
-            parent: undefined,
-            unit: "Sum",
-            cbs3: undefined,
-          },
-          {
-            level: 3,
-            code: "1.1.5",
-            description: "Environmental Design",
-            cbs: "110500",
-            parent: undefined,
-            unit: "Sum",
-            cbs3: undefined,
-          },
-        ],
-      },
-    ],
+    element: "A - Preliminaries",
+    level: "3",
+    wbs: "0150",
+    cbs: "C10150",
+    desc: "Method-Related Cost",
   },
   {
-    level: 1,
-    code: "10",
-    description: "Employers Direct Costs",
-    cbs: "D",
-    parent: undefined,
-    unit: undefined,
-    cbs3: undefined,
-    subRows: [
-      {
-        level: 2,
-        code: "2.1",
-        description: "Project Management",
-        cbs: "210000",
-        parent: undefined,
-        unit: undefined,
-        cbs3: undefined,
-      },
-      {
-        level: 2,
-        code: "2.2",
-        description: "Project Management",
-        cbs: "220000",
-        parent: undefined,
-        unit: undefined,
-        cbs3: undefined,
-      },
-    ],
+    element: "BC - Boxed Culverts / Underpasses",
+    level: "3",
+    wbs: "0300",
+    cbs: "C20300",
+    desc: "Fencing",
   },
   {
-    level: 1,
-    code: "3",
-    description: "Operations",
-    cbs: "3",
-    parent: undefined,
-    unit: undefined,
-    cbs3: undefined,
-    subRows: [
-      {
-        level: 2,
-        code: "3.1",
-        description: "Operations Performance Data",
-        cbs: "310000",
-        parent: undefined,
-        unit: undefined,
-        cbs3: undefined,
-        subRows: [
-          {
-            level: 3,
-            code: "3.1.1",
-            description: "Network Performance Data",
-            cbs: "310100",
-            parent: undefined,
-            unit: undefined,
-            cbs3: undefined,
-          },
-          {
-            level: 3,
-            code: "3.1.2",
-            description: "Asset Performance Data",
-            cbs: "310200",
-            parent: undefined,
-            unit: undefined,
-            cbs3: undefined,
-          },
-        ],
-      },
-      {
-        level: 2,
-        code: "3.2",
-        description: "Operational Concept",
-        cbs: "320000",
-        parent: undefined,
-        unit: undefined,
-        cbs3: undefined,
-      },
-      {
-        level: 2,
-        code: "3.3",
-        description: "Road Bookings",
-        cbs: "330000",
-        parent: undefined,
-        unit: undefined,
-        cbs3: undefined,
-      },
-      {
-        level: 2,
-        code: "3.4",
-        description: "Operating Regime",
-        cbs: "340000",
-        parent: undefined,
-        unit: undefined,
-        cbs3: undefined,
-      },
-      {
-        level: 2,
-        code: "3.5",
-        description: "Bringing into Operation",
-        cbs: "350000",
-        parent: undefined,
-        unit: undefined,
-        cbs3: undefined,
-      },
-    ],
+    element: "BC - Boxed Culverts / Underpasses",
+    level: "3",
+    wbs: "0400",
+    cbs: "C20400",
+    desc: "Fencing",
+  },
+  {
+    element: "BC - Boxed Culverts / Underpasses",
+    level: "3",
+    wbs: "0400",
+    cbs: "C20400",
+    desc: "Road Restraint Systems",
+  },
+  {
+    element: "BC - Boxed Culverts / Underpasses",
+    level: "3",
+    wbs: "0500",
+    cbs: "C20500",
+    desc: "Drainage",
+  },
+  {
+    element: "BC - Boxed Culverts / Underpasses",
+    level: "3",
+    wbs: "0600",
+    cbs: "C20600",
+    desc: "Earthworks",
+  },
+  {
+    element: "BC - Boxed Culverts / Underpasses",
+    level: "3",
+    wbs: "1100",
+    cbs: "C21100",
+    desc: "Kerbs, Footways And Paved Areas",
+  },
+  {
+    element: "BC - Boxed Culverts / Underpasses",
+    level: "3",
+    wbs: "1200",
+    cbs: "C21200",
+    desc: "Traffic Signs And Road Markings",
+  },
+  {
+    element: "C - Central Reserve",
+    level: "3",
+    wbs: "0400",
+    cbs: "C20400",
+    desc: "Road Restraint Systems",
+  },
+  {
+    element: "C - Central Reserve",
+    level: "3",
+    wbs: "0500",
+    cbs: "C20500",
+    desc: "Drainage",
+  },
+  {
+    element: "C - Central Reserve",
+    level: "3",
+    wbs: "0600",
+    cbs: "C20600",
+    desc: "Earthworks",
+  },
+  {
+    element: "C - Central Reserve",
+    level: "3",
+    wbs: "0700",
+    cbs: "C20700",
+    desc: "Pavements",
+  },
+  {
+    element: "EO - Extended Overbridges",
+    level: "3",
+    wbs: "1300",
+    cbs: "C21300",
+    desc: "Road Lighting Columns, Brackets & CCTV Masts",
+  },
+  {
+    element: "EO - Extended Overbridges",
+    level: "3",
+    wbs: "1400",
+    cbs: "C21400",
+    desc: "Electrical Work For Road Lighting And Traffic Signs",
+  },
+  {
+    element: "EO - Extended Overbridges",
+    level: "3",
+    wbs: "1500",
+    cbs: "C21600",
+    desc: "Piling and Embedded Retaining Walls",
+  },
+  {
+    element: "EO - Extended Overbridges",
+    level: "3",
+    wbs: "1600",
+    cbs: "C21700",
+    desc: "Structural Concrete",
+  },
+  {
+    element: "EO - Extended Overbridges",
+    level: "3",
+    wbs: "1700",
+    cbs: "C21700",
+    desc: "Waterproofing for concrete structures",
   },
 ];
 
-export const wbsmapdata = [
-  "3.1.1 Network Performance Data 310000",
-  "3.1.2 Operational Concept 320000",
-  "3.1.3 Road Bookings 330000",
-  "3.1.4 Operating Regime 340000",
-  "3.1.5 Bringing into Operation 350000",
+export const mapelement = [
+  "A - Preliminaries",
+  "B - Method Related - General",
+  "BC - Boxed Culverts / Underpasses",
+  "C - Central Reserve",
+  "DG - DUAL SPAN GANTRY",
+  "E - General / Enabling Works",
+  "EO - Extended Overbridges",
+  "EU - Extended Underbridges",
+];
+
+export const mapwbs = [
+  "0100.10.10.10 (Establish Accommodation/Compounds)",
+  "0100.10.10.20 (Erection of offices (incl. transportation))",
+  "0100.10.10.30 (Information Boards)",
+  "0100.10.40 (Land Rental and Rates)",
+  "0100.10.40.10 (Land Rental)",
+  "0100.10.50 (Site services - Water / Sewage / Site Power / Temporary Electrics)",
+  "0100.10.50.30 (Sewage - Set-up)",
+  "0100.10.50.60 (Temporary Electricity - Running Cost)",
+  "0100.20.10.50 (Administration/Clerical)",
+  "0100.20.20.20 (Accommodation & Subsistence)",
+  "0100.20.20.60 (Site Specific Training)",
+  "0100.20.30.10 (Contractors Consultants e.g. site based design supervision)",
+  "0100.20.40.40 (Traffic Modelling (Lot 5))",
+  "0100.30.10.45 (PCF Products by Contractor - Procurement)",
+  "0100.30.20.80 (PCF Products by Overseeing Organisation - Handover)",
+  "0100.50.10.10 (Security Personnel)",
+  "0100.60.20.10 (Surveying Equipment for the Contractor - Setting out equipment )",
+  "0100.60.40.50 (Steelwork Material Testing)",
+  "0100.70.30.20 (Local Authority Licences / Orders (paid by the contractor))",
+  "0150.10 (Attendant Labour and Equipment)",
+  "0500.10.01.60 (Drains - Diameter  >=2400mm by jacking or thrustboring)",
 ];
