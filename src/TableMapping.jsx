@@ -7,9 +7,16 @@ import {
   getFilteredRowModel,
   getExpandedRowModel,
   flexRender,
+  createColumnHelper,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 import { ActionIcon, Box, Flex, Select, Table, Text } from "@mantine/core";
-import { IconArrowRight, IconArrowDown } from "@tabler/icons-react";
+import {
+  IconArrowRight,
+  IconArrowDown,
+  IconSortAscending,
+  IconSortDescending,
+} from "@tabler/icons-react";
 
 const CustomCell = ({
   getValue,
@@ -65,61 +72,77 @@ const CustomCell = ({
 export const TableMapping = () => {
   const [columnFilters, setColumnFilters] = useState([]);
 
+  const columnHelper = createColumnHelper();
+
   const columns = useMemo(
     () => [
-      {
-        accessorKey: "element",
-        header: () => <span>Work Element</span>,
-        footer: (props) => props.column.id,
-        meta: {
-          filterVariant: "select",
-        },
-      },
-      {
-        accessorKey: "level",
-        header: () => "Level",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "wbs",
-        header: "WBS Code",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "cbs",
-        header: "CBS Code",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "desc",
-        header: "Description",
-        footer: (props) => props.column.id,
-      },
-      {
-        header: "Mapping Element",
-        accessor: "test",
-        cell: ({ getValue, row, column, table }) => (
-          <CustomCell
-            getValue={getValue}
-            row={row}
-            column={column}
-            table={table}
-          />
-        ),
-      },
-      {
-        header: "Mapping WBS",
-        accessor: "test",
-        cell: ({ getValue, row, column, table }) => (
-          <CustomCell
-            type="wbs"
-            getValue={getValue}
-            row={row}
-            column={column}
-            table={table}
-          />
-        ),
-      },
+      columnHelper.group({
+        id: "hello",
+        header: () => <span>WBS National Highways</span>,
+        // footer: props => props.column.id,
+        columns: [
+          {
+            accessorKey: "element",
+            header: () => <span>Work Element</span>,
+            footer: (props) => props.column.id,
+            meta: {
+              filterVariant: "select",
+            },
+          },
+          {
+            accessorKey: "level",
+            header: () => "Level",
+            footer: (props) => props.column.id,
+          },
+          {
+            accessorKey: "wbs",
+            header: "WBS Code",
+            footer: (props) => props.column.id,
+          },
+          {
+            accessorKey: "cbs",
+            header: "CBS Code",
+            footer: (props) => props.column.id,
+          },
+          {
+            accessorKey: "desc",
+            header: "Description",
+            footer: (props) => props.column.id,
+          },
+        ],
+      }),
+      columnHelper.group({
+        id: "hello2",
+        header: () => <span>WBS Supplier</span>,
+        // footer: props => props.column.id,
+        columns: [
+          {
+            header: "Mapping Element",
+            accessor: "test",
+            cell: ({ getValue, row, column, table }) => (
+              <CustomCell
+                getValue={getValue}
+                row={row}
+                column={column}
+                table={table}
+              />
+            ),
+          },
+          {
+            header: "Mapping WBS",
+            accessor: "test",
+            cell: ({ getValue, row, column, table }) => (
+              <CustomCell
+                type="wbs"
+                getValue={getValue}
+                row={row}
+                column={column}
+                table={table}
+              />
+            ),
+          },
+        ],
+      }),
     ],
     [],
   );
@@ -136,26 +159,28 @@ export const TableMapping = () => {
       columnFilters,
     },
     onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     onExpandedChange: setExpanded,
     getSubRows: (row) => row.subRows,
-    getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     debugTable: true,
   });
 
   useEffect(() => {
-    table.setPageSize(50);
+    // table.setPageSize(50);
+    table.setPageSize(300);
   }, []);
 
   return (
     <Table
-      verticalSpacing="md"
+      verticalSpacing="sm"
       striped
       highlightOnHover
       withTableBorder
-      withColumnBorders
+      // withColumnBorders
     >
       <Table.Thead>
         {table.getHeaderGroups().map((headerGroup) => (
@@ -164,14 +189,25 @@ export const TableMapping = () => {
               return (
                 <Table.Th key={header.id} colSpan={header.colSpan}>
                   {header.isPlaceholder ? null : (
-                    <div>
+                    <div
+                      style={{ display: "flex", alignItems: "center" }}
+                      {...{
+                        className: header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : "",
+                        onClick: header.column.getToggleSortingHandler(),
+                      }}
+                    >
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
-
+                      {{
+                        asc: <IconSortAscending stroke={2} />,
+                        desc: <IconSortDescending stroke={2} />,
+                      }[header.column.getIsSorted()] ?? null}
                       {header.column.getCanFilter() ? (
-                        <div>
+                        <div style={{ marginLeft: "8px" }}>
                           <Filter column={header.column} />
                         </div>
                       ) : null}

@@ -1,6 +1,5 @@
-import {Table} from "./Table.jsx";
-import {TableMapping} from "./TableMapping.jsx";
-
+import { Table } from "./Table.jsx";
+import { TableMapping } from "./TableMapping.jsx";
 
 function App() {
   return (
@@ -9,4 +8,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
